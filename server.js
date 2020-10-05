@@ -1,8 +1,8 @@
 const express = require("express")
 const  bodyParser = require("body-parser");
 const mysqlConnection = require("./connection")
-const peopleRoutes = require("./routes/people")
-const booksRouter = require("./routes/books")
+const apiRouters = require("./routes/api_router")
+const crudUiRouter = require("./routes/question_ui_router")
 const flash = require('express-flash');
 var session = require('express-session');
 var path = require('path');
@@ -27,8 +27,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/questions", peopleRoutes)
-app.use('/question_ui', booksRouter);
+app.use("/questions", apiRouters)
+app.use('/question_ui', crudUiRouter);
 
 
 app.listen(3000)

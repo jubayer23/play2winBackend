@@ -4,7 +4,7 @@ const mysqlConnection = require("../connection")
 var async = require('async');
 const mysql = require("mysql");
 
-// display books page
+// display crud_ui page
 router.get('/', function(req, res, next) {
 
     var output = [];
@@ -12,8 +12,8 @@ router.get('/', function(req, res, next) {
         //if(error) throw err;
         if(error) {
             req.flash('error', err);
-            // render to views/books/index.ejs
-            res.render('books',{data:''});
+            // render to views/crud_ui/index.ejs
+            res.render('crud_ui',{data:''});
         }
 
         async.eachSeries(results,function(data,callback){ // It will be executed one by one
@@ -22,8 +22,8 @@ router.get('/', function(req, res, next) {
                // if(error) throw err;
                 if(error) {
                     req.flash('error', err);
-                    // render to views/books/index.ejs
-                    res.render('books',{data:''});
+                    // render to views/crud_ui/index.ejs
+                    res.render('crud_ui',{data:''});
                 }
 
                 var json = {}
@@ -48,7 +48,7 @@ router.get('/', function(req, res, next) {
             });
 
         }, function(err, results) {
-            res.render('books',{data:output});
+            res.render('crud_ui',{data:output});
             //console.log(output); // Output will the value that you have inserted in array, once for loop completed ex . 1,2,3,4,5,6,7,8,9
             //res.send(output)
         });
@@ -60,7 +60,7 @@ router.get('/', function(req, res, next) {
 // display add book page
 router.get('/add', function(req, res, next) {
     // render to add.ejs
-    res.render('books/add', {
+    res.render('crud_ui/add', {
         question: '',
         category: '',
         difficulty: '',
@@ -90,7 +90,7 @@ router.post('/add', function(req, res, next) {
         // set flash message
         req.flash('error', "Please enter name and author");
         // render to add.ejs with flash message
-        res.render('books/add', {
+        res.render('crud_ui/add', {
             question: question,
             category: category,
             difficulty: difficulty,
@@ -118,7 +118,7 @@ router.post('/add', function(req, res, next) {
                 req.flash('error', err)
 
                 // render to add.ejs
-                res.render('books/add', {
+                res.render('crud_ui/add', {
                     question: form_data.question,
                     category: form_data.category,
                     difficulty: form_data.difficulty
@@ -181,9 +181,9 @@ router.get('/edit/(:id)', function(req, res, next) {
                 }
 
                 json['incorrect_answers'] = json2
-                res.render('books/edit',{data:json});
+                res.render('crud_ui/edit',{data:json});
                 // render to edit.ejs
-                /*res.render('books/edit', {
+                /*res.render('crud_ui/edit', {
                     title: 'Edit Book',
                     id: rows[0].id,
                     name: rows[0].name,
@@ -216,7 +216,7 @@ router.post('/update/(:id)', function(req, res, next) {
         // set flash message
         req.flash('error', "Please enter name and author");
         // render to add.ejs with flash message
-        res.render('books/edit', {
+        res.render('crud_ui/edit', {
             id: req.params.id,
             name: name,
             author: author
@@ -238,7 +238,7 @@ router.post('/update/(:id)', function(req, res, next) {
                 // set flash message
                 req.flash('error', err)
                 // render to edit.ejs
-                res.render('books/edit', {
+                res.render('crud_ui/edit', {
                     id: req.params.id,
                     name: form_data.name,
                     author: form_data.author
