@@ -57,7 +57,7 @@ router.get('/', function(req, res, next) {
 
 })
 
-// display add book page
+// display add question page
 router.get('/add', function(req, res, next) {
     // render to add.ejs
     res.render('crud_ui/add', {
@@ -72,7 +72,7 @@ router.get('/add', function(req, res, next) {
 })
 
 
-// add a new book
+// add a new question
 router.post('/add', function(req, res, next) {
 
     let question = req.body.question;
@@ -84,11 +84,12 @@ router.post('/add', function(req, res, next) {
     let option3 = req.body.option3;
     let errors = false;
 
-    if(question.length === 0 || category.length === 0) {
+    if(question.length === 0 || category.length === 0 || difficulty.length === 0 || correct.length === 0
+    || option1.length === 0 || option2.length === 0 || option3.length === 0) {
         errors = true;
 
         // set flash message
-        req.flash('error', "Please enter name and author");
+        req.flash('error', "Please enter all details");
         // render to add.ejs with flash message
         res.render('crud_ui/add', {
             question: question,
@@ -134,7 +135,7 @@ router.post('/add', function(req, res, next) {
 
                 mysqlConnection.query('INSERT INTO question_choices (choice, is_right_choice, question_id) VALUES ?', [values1], function(err, result) {
                     if(!err){
-                        console.log('id', result)
+                        //console.log('id', result)
                         req.flash('success', 'Question successfully added');
                         res.redirect('/question_ui/add');
                     }else{
@@ -148,7 +149,7 @@ router.post('/add', function(req, res, next) {
     }
 })
 
-// display edit book page
+// display edit question page
 router.get('/edit/(:id)', function(req, res, next) {
 
     let id = req.params.id;
@@ -159,36 +160,36 @@ router.get('/edit/(:id)', function(req, res, next) {
        // console.log("row", rows)
         // if user not found
         if (rows.length <= 0 || err) {
-            req.flash('error', 'Book not found with id = ' + id)
+            req.flash('error', 'Question not found with id = ' + id)
             res.redirect('/question_ui')
         }
-        // if book found
+        // if question found
         else {
             mysqlConnection.query('SELECT * FROM question_choices  where question_id = ' + id,function(error,sub_rows,filelds){
 
-                var json = {}
-                json['id'] = id
-                json['question'] = rows[0].question
-                json['difficulty'] = rows[0].difficulty
-                json['category'] = rows[0].category
-                var json2 = {}
-                for(var i = 0; i < sub_rows.length; i++){
-                    if(sub_rows[i].is_right_choice == 1){
-                        json['correct_answer'] = sub_rows[i].choice
-                    }else{
-                        json2['option'+i] = sub_rows[i].choice
+                if(sub_rows.length >= 3 && !error){
+                    var json = {}
+                    json['id'] = id
+                    json['question'] = rows[0].question
+                    json['difficulty'] = rows[0].difficulty
+                    json['category'] = rows[0].category
+                    var json2 = {}
+                    for(var i = 0; i < sub_rows.length; i++){
+                        if(sub_rows[i].is_right_choice == 1){
+                            json['correct_answer'] = sub_rows[i].choice
+                        }else{
+                            json2['option'+i] = sub_rows[i].choice
+                        }
                     }
+
+                    json['incorrect_answers'] = json2
+                    res.render('crud_ui/edit',{data:json});
+                }else{
+                    req.flash('error', 'Question not found with id = ' + id)
+                    res.redirect('/question_ui')
                 }
 
-                json['incorrect_answers'] = json2
-                res.render('crud_ui/edit',{data:json});
-                // render to edit.ejs
-                /*res.render('crud_ui/edit', {
-                    title: 'Edit Book',
-                    id: rows[0].id,
-                    name: rows[0].name,
-                    author: rows[0].author
-                })*/
+
             })
 
 
@@ -197,7 +198,7 @@ router.get('/edit/(:id)', function(req, res, next) {
 })
 
 
-// update book data
+// update question data
 router.post('/update/(:id)', function(req, res, next) {
 
     let id = req.params.id;
@@ -210,16 +211,22 @@ router.post('/update/(:id)', function(req, res, next) {
     let option3 = req.body.option3;
     let errors = false;
 
-    if(question.length === 0 || category.length === 0) {
+    if(question.length === 0 || category.length === 0 || difficulty.length === 0 || correct.length === 0
+        || option1.length === 0 || option2.length === 0 || option3.length === 0) {
         errors = true;
 
         // set flash message
-        req.flash('error', "Please enter name and author");
+        req.flash('error', "Please enter all details");
         // render to add.ejs with flash message
         res.render('crud_ui/edit', {
-            id: req.params.id,
-            name: name,
-            author: author
+            id: id,
+            question: question,
+            category: category,
+            difficulty: difficulty,
+            correct: correct,
+            option1: option1,
+            option2: option2,
+            option3: option3
         })
     }
 
@@ -268,10 +275,10 @@ router.post('/update/(:id)', function(req, res, next) {
                                 }
                             }
                         }
-                        console.log("query", queries)
+                        //console.log("query", queries)
                         mysqlConnection.query(queries, (err, result) =>{
                             if(!err){
-                                req.flash('success', 'Book successfully updated');
+                                req.flash('success', 'Question successfully updated');
                                 res.redirect('/question_ui');
                             }else{
                                 console.log("error", err)
@@ -285,6 +292,34 @@ router.post('/update/(:id)', function(req, res, next) {
             }
         })
     }
+
+
+})
+
+
+// delete question
+router.get('/delete/(:id)', function(req, res, next) {
+
+    let id = req.params.id;
+
+    mysqlConnection.query('DELETE FROM question WHERE id = ' + id, function(err, result) {
+        //if(err) throw err
+        if (err) {
+            // set flash message
+            req.flash('error', err)
+            // redirect to books page
+            res.redirect('/question_ui')
+        } else {
+
+            mysqlConnection.query('DELETE FROM question_choices WHERE question_id = ' + id, function(err, result) {
+                // set flash message
+                req.flash('success', 'Question successfully deleted! ID = ' + id)
+                // redirect to books page
+                res.redirect('/question_ui')
+            })
+
+        }
+    })
 })
 
 module.exports = router

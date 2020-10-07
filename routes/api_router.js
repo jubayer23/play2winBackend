@@ -2,10 +2,16 @@ const express = require("express")
 const router = express.Router()
 const mysqlConnection = require("../connection")
 var async = require('async');
+const mysql = require("mysql");
 
 router.get("/", async (req, res) =>{
 
     var amount = req.query.amount
+    var category = req.query.category
+    var difficulty = req.query.difficulty
+    if(!amount){
+       amount = 100
+    }
     //var phone = req.query.b
 
    /// console.log(username)
@@ -15,8 +21,21 @@ router.get("/", async (req, res) =>{
     const promises = []
 
     var output = [];
-    mysqlConnection.query('SELECT * FROM question LIMIT ' + amount ,function(error,results,filelds){
-        if(error) throw err;
+    var sql = ""
+    if(category && difficulty){
+        sql = mysql.format("select * from question where category=? && difficulty=? LIMIT " + amount,[category, difficulty])
+    }else if(category){
+        sql = mysql.format("select * from question where category= ?  LIMIT " + amount, category)
+    }else if(difficulty){
+        sql = mysql.format("select * from question where difficulty=? LIMIT " + amount, difficulty)
+    }else{
+        sql = "select * from question LIMIT " + amount
+    }
+    console.log("sql", sql)
+    mysqlConnection.query(sql ,function(error,results,filelds){
+        if(error) {
+            console.log(error)
+        }
 
         async.eachSeries(results,function(data,callback){ // It will be executed one by one
             //Here it will be wait query execute. It will work like synchronous
@@ -44,7 +63,7 @@ router.get("/", async (req, res) =>{
             });
 
         }, function(err, results) {
-            console.log(output); // Output will the value that you have inserted in array, once for loop completed ex . 1,2,3,4,5,6,7,8,9
+            //console.log(output); // Output will the value that you have inserted in array, once for loop completed ex . 1,2,3,4,5,6,7,8,9
             res.send(output)
         });
 

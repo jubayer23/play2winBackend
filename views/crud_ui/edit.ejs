@@ -5,47 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Edit Question</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
 </head>
-<body class="container" style="margin-top: 50px;">
+<body class="container bg-secondary" style="margin-top: 50px;">
 
 <% if (messages.error) { %>
     <div class="alert alert-danger" role="alert"><%- messages.error %></div>
 <% } %>
 
-<div class="card">
+<div class="card bg-dark text-white">
     <div class="card-header">
         Edit Question
     </div>
-    <div class="card-body">
-        <form action="/question_ui/update/<%= data.id %>" method="post">
+    <div class="card-body ">
+        <form action="/question_ui/update/<%if (locals.data) {%> <%=data.id %> <%} else {%><%=id%> <%}%>" method="post">
             <div class="form-group">
                 <label>Question:</label>
-                <input type="text" class="form-control" name="question" value="<%= data.question %>" autocomplete="off">
+                <input type="text" class="form-control" name="question" value="<%if (locals.data) { %> <%=data.question%> <% } else {%><%=question%> <%}%>" autocomplete="off">
             </div>
-            <div class="form-group">
-                <label>Category:</label>
-                <input type="text" class="form-control" name="category" value="<%= data.category %>" autocomplete="off">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <div>
+                        <label>Category:</label>
+                        <select class="browser-default custom-select" name="category" id="category">
+                            <option  selected>Select category</option>
+                            <option value="sports">Sports</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="politics">Politics</option>
+                            <option value="bollywood">Bollywood</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <div >
+                        <label>Difficulty:</label>
+                        <select class="browser-default custom-select" name="difficulty" id="difficulty">
+                            <option  selected>Select difficulty level</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Difficulty:</label>
-                <input type="text" class="form-control" name="difficulty" value="<%= data.difficulty %>" autocomplete="off">
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label >Correct Answer:</label>
+                    <input type="text" class="form-control" name="correct" value="<%if (locals.data) { %> <%=data.correct_answer%> <% } else {%><%=correct%> <%}%>" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Option 1:</label>
+                    <input type="text" class="form-control" name="option1" value="<%if (locals.data) {%> <%=data.incorrect_answers.option1%> <% } else {%><%=option1%> <%}%>" autocomplete="off">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Correct Ans:</label>
-                <input type="text" class="form-control" name="correct" value="<%= data.correct_answer %>" autocomplete="off">
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label >Option 2:</label>
+                    <input type="text" class="form-control" name="option2" value="<%if (locals.data) {%> <%=data.incorrect_answers.option2 %> <%} else {%><%=option2%> <%}%>" autocomplete="off">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Option 3:</label>
+                    <input type="text" class="form-control" name="option3" value="<%if (locals.data) {%> <%=data.incorrect_answers.option3 %> <% } else {%><%=option3%> <%}%>" autocomplete="off">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Option 1:</label>
-                <input type="text" class="form-control" name="option1" value="<%= data.incorrect_answers.option1 %>" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Option 2:</label>
-                <input type="text" class="form-control" name="option2" value="<%= data.incorrect_answers.option2 %>" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Option 3:</label>
-                <input type="text" class="form-control" name="option3" value="<%= data.incorrect_answers.option3 %>" autocomplete="off">
-            </div>
+
+
             <div class="form-group">
                 <input type="submit" class="btn btn-info" value="Update"/>
             </div>
@@ -55,3 +81,17 @@
 
 </body>
 </html>
+<script>
+
+    var x = "<%if (locals.data) {%> <%=data.category%> <% } else {%><%=category%> <%}%>";
+    selectElement('leaveCode', x.toLowerCase().trim())
+
+
+    var x2 = "<%if (locals.data) {%> <%=data.difficulty%> <% } else {%><%=difficulty%> <%}%>";
+    selectElement('difficulty', x2.toLowerCase().trim())
+
+    function selectElement(id, valueToSelect) {
+        let element = document.getElementById(id);
+        element.value = valueToSelect;
+    }
+</script>
