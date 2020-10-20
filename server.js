@@ -3,9 +3,11 @@ const  bodyParser = require("body-parser");
 const mysqlConnection = require("./connection")
 const apiRouters = require("./routes/api_router")
 const crudUiRouter = require("./routes/question_ui_router")
+const ngrok = require('ngrok');
 const flash = require('express-flash');
 var session = require('express-session');
 var path = require('path');
+
 
 
 var app = express();
@@ -30,5 +32,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/questions", apiRouters)
 app.use('/question_ui', crudUiRouter);
 
+const server = app.listen(3000, () => {
+    console.log('Running at 3000');
+});
 
-app.listen(3000)
+ngrok.connect({
+    proto : 'http',
+    addr : process.env.PORT,
+}, (err, url) => {
+    if (err) {
+        console.error('Error while connecting Ngrok',err);
+        return new Error('Ngrok Failed');
+    }
+});
+console.log('Final');
+//app.listen(3000)
