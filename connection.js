@@ -2,7 +2,7 @@ const mysql = require("mysql");
 var mysqlConnection = mysql.createConnection({
     host : "localhost",
     user : "root",
-    password: "10148710",
+    password: "password",
     database: "test",
     multipleStatements : true
 });
@@ -12,7 +12,7 @@ mysqlConnection.connect((err) => {
 
         console.log("connected")
     }else{
-
+        console.log(err)
         console.log("Not connected")
     }
 })
