@@ -32,8 +32,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/questions", apiRouters)
 app.use('/question_ui', crudUiRouter);
 
-const server = app.listen(3000, () => {
-    console.log('Running at 3000');
+var PORT = process.env.PORT || 3000;
+const server = app.listen(PORT, () => {
+    console.log('Running at ',PORT);
 });
 
 ngrok.connect({
