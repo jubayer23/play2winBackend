@@ -20,6 +20,7 @@ router.get("/", async (req, res) =>{
     var jsonArr = []
     const promises = []
 
+    var bigOutput = {}
     var output = [];
     var sql = ""
     if(category && difficulty){
@@ -31,7 +32,7 @@ router.get("/", async (req, res) =>{
     }else{
         sql = "select * from question LIMIT " + amount
     }
-    console.log("sql", sql)
+    //console.log("sql", sql)
     mysqlConnection.query(sql ,function(error,results,filelds){
         if(error) {
             console.log(error)
@@ -44,14 +45,15 @@ router.get("/", async (req, res) =>{
 
                 var json = {}
                 json['question'] = data.question
+                json['type'] = 'multiple'
                 json['difficulty'] = data.difficulty
                 json['category'] = data.category
-                var json2 = {}
+                var json2 = []
                 for(var i = 0; i < results1.length; i++){
                     if(results1[i].is_right_choice == 1){
                         json['correct_answer'] = results1[i].choice
                     }else{
-                        json2['option'+i] = results1[i].choice
+                        json2.push(results1[i].choice)
                     }
                 }
 
@@ -64,7 +66,10 @@ router.get("/", async (req, res) =>{
 
         }, function(err, results) {
             //console.log(output); // Output will the value that you have inserted in array, once for loop completed ex . 1,2,3,4,5,6,7,8,9
-            res.send(output)
+
+            bigOutput['response_code'] = 0
+            bigOutput['results'] = output
+            res.send(bigOutput)
         });
 
 
