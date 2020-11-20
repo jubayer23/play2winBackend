@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/questions", apiRouters)
 app.use('/question_ui', crudUiRouter);
 
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
     console.log('Running at ',PORT);
 });
